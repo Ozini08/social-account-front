@@ -142,8 +142,6 @@ export const KakaoLogin = () => {
             <p>닉네임: {userInfo.nickname}</p>
             <img src={userInfo.profileImage} alt="프로필" width="100" />
             <br />
-            <p>목장: {userInfo.userGroup}</p>
-            <br />
             <button onClick={handleLogout}>로그아웃</button>
           </div>
         </>
