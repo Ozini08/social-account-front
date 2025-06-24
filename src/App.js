@@ -3,6 +3,9 @@ import { KakaoLogin } from "./KakaoLogin"; // KakaoLogin 컴포넌트 임포트
 import "./App.css";
 import { useLocation, BrowserRouter, Routes, Route } from "react-router-dom";
 import { SideDesktop } from "./side/SideDesktop";
+import { LoginMemberProvider } from "./MemberContext";
+import { Members } from "./Members";
+import { Groups } from "./Groups";
 
 function Layout() {
   const location = useLocation();
@@ -14,17 +17,21 @@ function Layout() {
   // function App() {
   return (
     <div className="App">
-      {showSidebar && <SideDesktop />}
+      <SideDesktop />
       {/* 나중에 여기에 Routes도 추가할 수 있음 */}
       <div className="page-content">
-        <Routes>
-          <Route path="/groups" element={<div>그룹</div>} />
-          <Route path="/teams" element={<div>팀</div>} />
-          <Route path="/events" element={<div>행사</div>} />
-          <Route path="/schedule" element={<div>일정</div>} />
-          {/* 기타 경로 */}
-        </Routes>
-        <KakaoLogin />
+        <LoginMemberProvider>
+          <Routes>
+            <Route path="/" element={<KakaoLogin />} />
+            <Route path="/members" element={<Members />} />
+            <Route path="/groups" element={<Groups />} />
+            <Route path="/teams" element={<div>팀</div>} />
+            <Route path="/events" element={<div>행사</div>} />
+            <Route path="/schedule" element={<div>일정</div>} />
+            {/* 기타 경로 */}
+          </Routes>
+        </LoginMemberProvider>
+        {/* <KakaoLogin /> */}
       </div>
     </div>
   );

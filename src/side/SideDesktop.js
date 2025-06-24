@@ -7,6 +7,7 @@ export const SideDesktop = () => {
   const navigate = useNavigate();
 
   const menuItems = [
+    { label: "메인", path: "/" },
     { label: "멤버", path: "/members" },
     { label: "그룹", path: "/groups" },
     { label: "팀", path: "/teams" },
