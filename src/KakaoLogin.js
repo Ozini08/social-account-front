@@ -1,17 +1,11 @@
 import { useEffect, useState } from "react";
 import { useLoginMember } from "./MemberContext";
 import { SignupForm } from "./SignupForm";
+import { csrfFetch } from "./csrfFetch";
 
 export const KakaoLogin = () => {
-  const { loginMember, setLoginMember, fetchUserInfo } = useLoginMember();
+  const { loginMember, setLoginMember } = useLoginMember();
   const [needsSignup, setNeedsSignup] = useState(false);
-
-  const getCookie = (name) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(";").shift();
-    return null;
-  };
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -29,18 +23,9 @@ export const KakaoLogin = () => {
   const handleLogin = () => {
     window.Kakao.Auth.login({
       success: function (response) {
-        // CSRF 토큰을 쿠키에서 읽기
-        const token = getCookie("XSRF-TOKEN");
-        console.log("사용할 CSRF 토큰:", token);
-
         setTimeout(() => {
-          fetch("http://localhost:8080/api/kakao/login", {
+          csrfFetch("/api/kakao/login", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "X-XSRF-TOKEN": token, // CSRF 토큰을 헤더에 추가
-            },
-            credentials: "include",
             body: JSON.stringify({ accessToken: response.access_token }),
           })
             .then((res) => {
@@ -75,14 +60,8 @@ export const KakaoLogin = () => {
 
   const handleLogout = () => {
     window.Kakao.Auth.logout(() => {
-      const token = getCookie("XSRF-TOKEN");
-      fetch("http://localhost:8080/api/kakao/logout", {
+      csrfFetch("/api/kakao/logout", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-XSRF-TOKEN": token, // ✅ 추가
-        },
-        credentials: "include",
       }).then(() => {
         setLoginMember(null);
       });

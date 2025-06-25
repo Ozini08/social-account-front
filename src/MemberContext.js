@@ -1,11 +1,12 @@
 // MemberContext.js
 import React, { createContext, useState, useEffect, useContext } from "react";
+import { csrfFetch } from "./csrfFetch";
 
 const MemberContext = createContext();
 
 export const LoginMemberProvider = ({ children }) => {
   useEffect(() => {
-    fetch("http://localhost:8080/api/csrf", {
+    fetch("/api/csrf", {
       method: "GET",
       credentials: "include", // 반드시 필요!
     }).then(() => {
@@ -15,16 +16,11 @@ export const LoginMemberProvider = ({ children }) => {
   const [loginMember, setLoginMember] = useState(null); // null로 초기화
   const [loading, setLoading] = useState(true);
 
-  const getCookie = (name) => {
-    const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
-    return match ? decodeURIComponent(match[2]) : null;
-  };
-  console.log(getCookie("XSRF-TOKEN"));
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/kakao/user-info", {
-          credentials: "include",
+        const res = await csrfFetch("/api/kakao/user-info", {
+          method: "GET",
         });
 
         if (res.ok) {
@@ -32,18 +28,11 @@ export const LoginMemberProvider = ({ children }) => {
           setLoginMember(data);
         } else {
           // access_token 만료되었으면 refresh
-          const refreshRes = await fetch("http://localhost:8080/api/kakao/token/refresh", {
+          const refreshRes = await csrfFetch("/api/kakao/token/refresh", {
             method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-              "X-XSRF-TOKEN": getCookie("XSRF-TOKEN"),
-            },
           });
 
           if (refreshRes.ok) {
-            const refreshData = await refreshRes.json();
-            console.log("토큰 재발급 성공", refreshData);
             fetchUserInfo(); // 재시도
           } else {
             setLoginMember(null); // 재발급 실패

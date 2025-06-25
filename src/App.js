@@ -1,19 +1,15 @@
 import React from "react";
 import { KakaoLogin } from "./KakaoLogin"; // KakaoLogin 컴포넌트 임포트
 import "./App.css";
-import { useLocation, BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SideDesktop } from "./side/SideDesktop";
 import { LoginMemberProvider } from "./MemberContext";
 import { Members } from "./Members";
 import { Groups } from "./Groups";
 
 function Layout() {
-  const location = useLocation();
-
   // 사이드바를 보여줄 경로
-  const showSidebarPaths = ["/members", "/groups", "/teams", "/events", "/schedule"];
 
-  const showSidebar = showSidebarPaths.includes(location.pathname);
   // function App() {
   return (
     <div className="App">
